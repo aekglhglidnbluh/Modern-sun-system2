@@ -1,0 +1,231 @@
+package com.company;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+
+public class Main extends JFrame implements KeyListener {
+
+    public static class Planet {
+        private int x;
+        double dx, dy;
+        Planet parent;
+        double a;
+        Color color;
+
+        public Planet(double dx, double dy, Planet parent, double a, Color color, int x) {
+            this.dx = dx;
+            this.dy = dy;
+            this.parent = parent;
+            this.a = a;
+            this.color = color;
+            this.x = x;
+        }
+        double[] whereIAm() {
+            if (parent == null) return new double[]{dx, dy};
+            else {
+                double[] parentPos = parent.whereIAm();
+                return new double[]{dx + parentPos[0], dy + parentPos[1]};
+            }
+        }
+    }
+    static double a[] = {0.05, 0.014, 0.01, 0.02, 0.009, 0.004, 0.03, 0.03, 0.05, 0.07, 0.09};
+    static double b[] = {0.012, 0.015, 0.011, 0.019, 0.0098, 0.0041, 0.032, 0.025, 0.05, 0.07, 0.09, 0.001, 0.0159, 0.02, 0.06, 0.004, 0.056, 0.099};
+    static ArrayList<Planet> planets = new ArrayList<>(List.of());
+    static ArrayList<Planet> meteors = new ArrayList<>(List.of());
+    static Planet sun = new Planet(700, 400, null, 0, Color.YELLOW, 100);
+    static Planet merkuriy = new Planet(100, 100, sun, a[0], Color.ORANGE, 15);
+    static Planet venera = new Planet(150, 150, sun, a[1], Color.GREEN, 30);
+    static Planet earth = new Planet(200, 200, sun, a[2], Color.BLUE, 30);
+    static Planet mars = new Planet(250, 250, sun, a[3], Color.RED, 20);
+    static Planet saturn = new Planet(350, 350, sun, a[4], Color.PINK, 40);
+    static Planet neptun = new Planet(450, 450, sun, a[5], Color.WHITE, 50);
+    static Planet uran = new Planet(500, 500, sun, a[6], Color.ORANGE, 35);
+    static Planet moon = new Planet(25, 25, earth, a[7], Color.WHITE, 10);
+    static Planet evropa = new Planet(50, 50, neptun, a[8], Color.DARK_GRAY, 20);
+    static Planet sputnik = new Planet(25, 25, venera, a[9], Color.LIGHT_GRAY, 7);
+    static Planet sputnik1 = new Planet(30, 30, neptun, a[9], Color.LIGHT_GRAY, 10);
+    static Planet sputnik2 = new Planet(70, 70, neptun, a[10], Color.LIGHT_GRAY, 15);
+    static Planet meteor1 = new Planet(260, 260, sun, b[0], Color.GRAY, 10);
+    static Planet meteor2 = new Planet(270, 270, sun, b[1], Color.GRAY,10);
+    static Planet meteor3 = new Planet(280, 280, sun, b[2], Color.GRAY,10);
+    static Planet meteor4 = new Planet(290, 290, sun, b[3], Color.GRAY,10);
+    static Planet meteor5 = new Planet(300, 300, sun, b[4], Color.GRAY,10);
+    static Planet meteor6 = new Planet(310, 310, sun, b[5], Color.GRAY,10);
+    static Planet meteor7 = new Planet(320, 320, sun, b[6], Color.GRAY,10);
+    static Planet meteor8 = new Planet(330, 330, sun, b[7], Color.GRAY,10);
+    static Planet meteor9 = new Planet(340, 340, sun, b[8], Color.GRAY,10);
+    static Planet meteor10 = new Planet(335, 335, sun, b[9], Color.GRAY,10);
+    static Planet meteor11 = new Planet(325, 325, sun, b[10], Color.GRAY,10);
+    static Planet meteor12 = new Planet(315, 315, sun, b[11], Color.GRAY,10);
+    static Planet meteor13 = new Planet(305, 305, sun, b[12], Color.GRAY,10);
+    static Planet meteor14 = new Planet(295, 295, sun, b[13], Color.GRAY,10);
+    static Planet meteor15 = new Planet(285, 285, sun, b[14], Color.GRAY,10);
+    static Planet meteor16 = new Planet(275, 275, sun, b[15], Color.GRAY,10);
+    static Planet meteor17 = new Planet(265, 265, sun, b[16], Color.GRAY,10);
+    static Planet meteor18 = new Planet(255, 255, sun, b[17], Color.GRAY, 10);
+    static {
+        planets.add(sun);
+        planets.add(merkuriy);
+        planets.add(venera);
+        planets.add(earth);
+        planets.add(mars);
+        planets.add(saturn);
+        planets.add(neptun);
+        planets.add(uran);
+        planets.add(moon);
+        planets.add(evropa);
+        planets.add(sputnik);
+        planets.add(sputnik1);
+        planets.add(sputnik2);
+        meteors.add(meteor1);
+        meteors.add(meteor2);
+        meteors.add(meteor3);
+        meteors.add(meteor4);
+        meteors.add(meteor5);
+        meteors.add(meteor6);
+        meteors.add(meteor7);
+        meteors.add(meteor8);
+        meteors.add(meteor9);
+        meteors.add(meteor10);
+        meteors.add(meteor11);
+        meteors.add(meteor12);
+        meteors.add(meteor13);
+        meteors.add(meteor14);
+        meteors.add(meteor15);
+        meteors.add(meteor16);
+        meteors.add(meteor17);
+        meteors.add(meteor18);
+
+
+    }
+    static BufferedImage img;
+    static {
+        try{
+            img = ImageIO.read(new File("Stars3.jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void draw(Graphics2D g) {
+        g.setColor(Color.BLACK);
+        g.drawImage(img, 0, 0, 1700, 1700, null);
+        for (int i = 0; i < planets.size(); i++) {
+            g.setColor(planets.get(i).color);
+            g.fillOval((int) planets.get(i).whereIAm()[0] - planets.get(i).x / 2, (int) planets.get(i).whereIAm()[1] - planets.get(i).x / 2, planets.get(i).x, planets.get(i).x);
+            double x = (planets.get(i).dx * Math.cos(planets.get(i).a)) + (planets.get(i).dy * Math.sin(planets.get(i).a));
+            double y = (planets.get(i).dx * -Math.sin(planets.get(i).a)) + (planets.get(i).dy * Math.cos(planets.get(i).a));
+            planets.get(i).dx = x;
+            planets.get(i).dy = y;
+        }
+        for (int i = 0; i < meteors.size(); i++) {
+            g.setColor(meteors.get(i).color);
+            g.fillOval((int) meteors.get(i).whereIAm()[0] - meteors.get(i).x / 2, (int) meteors.get(i).whereIAm()[1] - meteors.get(i).x / 2, meteors.get(i).x, meteors.get(i).x);
+            double x = (meteors.get(i).dx * Math.cos(meteors.get(i).a)) + (meteors.get(i).dy * Math.sin(meteors.get(i).a));
+            double y = (meteors.get(i).dx * -Math.sin(meteors.get(i).a)) + (meteors.get(i).dy * Math.cos(meteors.get(i).a));
+            meteors.get(i).dx = x;
+            meteors.get(i).dy = y;
+        }
+    }
+
+    //Функция вызывается при нажатии клавиши один раз, и при удерживании несколько раз в секунду
+    public void keyPressed(KeyEvent e) {
+        int key = e.getKeyCode();
+        if (key == KeyEvent.VK_LEFT) {
+            for (int i = 0; i < planets.size(); i++) {
+                planets.get(i).a = planets.get(i).a*2;
+            }
+            for (int i = 0; i < meteors.size(); i++) {
+                meteors.get(i).a = meteors.get(i).a*2;
+            }
+        }
+        if (key == KeyEvent.VK_RIGHT) {
+            for (int i = 0; i < planets.size(); i++) {
+                planets.get(i).a = planets.get(i).a/2;
+            }
+            for (int i = 0; i < meteors.size(); i++) {
+                meteors.get(i).a = meteors.get(i).a/2;
+            }
+        }
+        if (key == KeyEvent.VK_UP) {
+            for (int i = 0; i < planets.size(); i++) {
+                planets.get(i).x = (int) (planets.get(i).x*1.5);
+                planets.get(i).dx = planets.get(i).dx+planets.get(i).x*1.5;
+            }
+            for (int i = 0; i < meteors.size(); i++) {
+                meteors.get(i).x = (int) (meteors.get(i).x*1.5);
+                meteors.get(i).dx = meteors.get(i).dx+meteors.get(i).x*1.5;
+            }
+        }
+        if (key == KeyEvent.VK_DOWN) {
+            for (int i = 0; i < planets.size(); i++) {
+                planets.get(i).dx = planets.get(i).dx-planets.get(i).x*1.5;
+                planets.get(i).x = (int) (planets.get(i).x/1.5);
+            }
+            for (int i = 0; i < meteors.size(); i++) {
+                meteors.get(i).dx = meteors.get(i).dx-meteors.get(i).x*1.5;
+                meteors.get(i).x = (int) (meteors.get(i).x/1.5);
+            }
+        }
+    }
+    static final int w = 1545;
+    static final int h = 870;
+
+    //магический код позволяющий всему работать, лучше не трогать
+    public static void main(String[] args) throws InterruptedException {
+        Main jf = new Main();
+        jf.setSize(w, h);
+        jf.setUndecorated(false);
+        jf.setTitle("Sun system");
+        jf.setVisible(true);
+        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jf.createBufferStrategy(2);
+        jf.addKeyListener(jf);
+        while (true) {
+            long frameLength = 1000 / 60; //пытаемся работать из рассчета  60 кадров в секунду
+            long start = System.currentTimeMillis();
+            BufferStrategy bs = jf.getBufferStrategy();
+            Graphics2D g = (Graphics2D) bs.getDrawGraphics();
+            g.clearRect(0, 0, jf.getWidth(), jf.getHeight());
+            draw(g);
+
+            bs.show();
+            g.dispose();
+
+            long end = System.currentTimeMillis();
+            long len = end - start;
+            if (len < frameLength) {
+                Thread.sleep(frameLength - len);
+            }
+
+
+        }
+
+    }
+
+    public void keyTyped(KeyEvent e) {
+    }
+    public void keyReleased(KeyEvent e) {
+    }
+}
